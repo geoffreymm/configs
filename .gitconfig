@@ -1,0 +1,6 @@
+[user]
+	email = geoffrey24@gmail.com
+	name = Geoffrey Marcelino
+[core]
+	excludesfile = /Users/geoffrey/.gitignore
+	editor = vim

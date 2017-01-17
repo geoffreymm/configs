@@ -1,4 +1,18 @@
-*.sublime-project
-*.sublime-workspace
-*.idea 
-*.DS_Store 
+*~
+*.swp
+*.swo
+.DS_Store
+
+# Android studio
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
+# local ruby version
+.ruby-version

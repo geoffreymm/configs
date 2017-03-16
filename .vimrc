@@ -19,6 +19,7 @@ Plugin 'vim-ruby/vim-ruby'
 Plugin 'tpope/vim-rails'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'jiangmiao/auto-pairs'
+Plugin 'vim-syntastic/syntastic'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -41,6 +42,7 @@ autocmd VimEnter * wincmd p
 
 " Show hidden files on NERDTree
 let NERDTreeShowHidden = 1
+let NERDTreeIgnore = ['\DS_Store$']
 
 " Toogle NERDTree with Ctrl+n
 map <C-n> :NERDTreeToggle<CR>
@@ -98,13 +100,31 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Resize window 
+" Resize window
 if bufwinnr(1)
   map + <C-W>>
   map - <C-W><
   map ± <C-W>=
 endif
 
-" Save shortcut not working
-map <C-s> <esc>:w<CR>
-imap <C-s> <esc>:w<CR>
+" Trim whitespaces
+fun! TrimWhitespace()
+  let l:save = winsaveview()
+  %s/\s\+$//e
+  call winrestview(l:save)
+endfun
+
+" Run before end
+autocmd BufWritePre * :call TrimWhitespace()
+
+" Syntastic config
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_ruby_checkers = ["mri"] "['rubocop']

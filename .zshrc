@@ -89,3 +89,9 @@ eval "$(rbenv init -)"
 
 # Android
 export ANDROID_HOME=/usr/local/opt/android-sdk
+
+# Autojump
+[ -f /usr/local/etc/profile.d/autojump.sh  ] && . /usr/local/etc/profile.d/autojump.sh
+
+# Numbered shortcuts to the output git status
+[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"

@@ -1,18 +1,27 @@
-*~
-*.swp
-*.swo
-.DS_Store
-
-# Android studio
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-
 # local ruby version
 .ruby-version
+
+# Logs and database
+*.log
+*.sqlite
+dump.rdb
+
+# Vim stuff
+*.swp
+*.swo
+
+# Macosx
+.DS_Store
+
+# Project Stuff
+Procfile.dev
+.env
+
+
+# Rails
+/public/system
+.rspec
+
+# node
+package-lock.json
+.nvmrc  

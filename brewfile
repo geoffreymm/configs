@@ -1,0 +1,24 @@
+tap 'caskroom/cask'
+
+# Core Homebrew
+brew 'autojump'
+brew 'git'
+brew 'neovim'
+brew 'nvm'
+brew 'overmind'
+brew 'rbenv'
+brew 'redis'
+brew 'the_silver_searcher'
+brew 'tmux'
+brew 'vim'
+brew 'zsh'
+
+# Cask Apps
+cask 'font-meslo-for-powerline'
+cask 'imageoptim'
+cask 'iterm2'
+cask 'ngrok'
+cask 'slack'
+cask 'spectacle'
+cask 'spotify'
+cask 'tableplus'

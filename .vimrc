@@ -1,44 +1,28 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+set encoding=utf-8
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+call plug#begin()
 
-" Keep Plugin commands between vundle#begin/end.
-Plugin 'scrooloose/nerdtree'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'zeis/vim-kolor'
-Plugin 'valloric/youcompleteme'
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'tpope/vim-rails'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'jiangmiao/auto-pairs'
-Plugin 'vim-syntastic/syntastic'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-haml'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-fugitive'
+Plug 'jiangmiao/auto-pairs'
+Plug 'zxqfl/tabnine-vim'
+Plug 'vim-ruby/vim-ruby'
+Plug 'zeis/vim-kolor'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'shougo/deoplete.nvim'
+Plug 'janko-m/vim-test'
+Plug 'tpope/vim-endwise'
+Plug 'kassio/neoterm'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
-" Open a NERDTree automatically when vim starts up
-autocmd vimenter * NERDTree
-autocmd VimEnter * wincmd p
+call plug#end()
 
 " Show hidden files on NERDTree
 let NERDTreeShowHidden = 1
@@ -60,6 +44,10 @@ let g:NERDCommentEmptyLines = 1
 syntax on
 colorscheme kolor
 
+" vim kolor
+let g:kolor_italic=1
+let g:kolor_bold=1
+
 " Identation setup
 set expandtab
 set shiftwidth=2
@@ -67,6 +55,7 @@ set softtabstop=2
 
 " Line number
 set number
+" set relativenumber
 
 " Set backspace
 set backspace=indent,eol,start
@@ -119,12 +108,63 @@ autocmd BufWritePre * :call TrimWhitespace()
 
 " Syntastic config
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+" Highlight search results
+:set hlsearch
+autocmd InsertEnter * :let @/=""
+autocmd InsertLeave * :let @/=""
 
-let g:syntastic_ruby_checkers = ["mri"] "['rubocop']
+" four space tabs for JS
+autocmd Filetype javascript setlocal ts=2 sts=2 sw=2
+
+autocmd BufNewFile,BufRead *.etl
+      \ set filetype=ruby
+
+" ctrl p use silver searcher
+let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
+let g:ctrlp_use_caching = 0
+
+" run tests
+map <Leader>t :TestFile<CR>
+map <Leader>r :TestNearest<CR>
+
+" Airline theme
+let g:airline_theme='deus'
+let g:airline_powerline_fonts = 1
+
+" Deoplete
+let g:deoplete#enable_at_startup = 1
+
+" Vim test
+tnoremap <ESC> <C-\><C-n>
+
+let test#strategy = "neovim"
+let test#neovim#term_position = "belowright"
+
+"""""""""""""""""""""
+" Terminal Settings "
+"""""""""""""""""""""
+
+" Window navigation function
+" Make ctrl-h/j/k/l move between windows and auto-insert in terminals
+func! s:mapMoveToWindowInDirection(direction)
+    func! s:maybeInsertMode(direction)
+        stopinsert
+        execute "wincmd" a:direction
+
+        if &buftype == 'terminal'
+            startinsert!
+        endif
+    endfunc
+
+    execute "tnoremap" "<silent>" "<C-" . a:direction . ">"
+                \ "<C-\\><C-n>"
+                \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
+    execute "nnoremap" "<silent>" "<C-" . a:direction . ">"
+                \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
+endfunc
+for dir in ["h", "j", "l", "k"]
+  call s:mapMoveToWindowInDirection(dir)
+endfor

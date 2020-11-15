@@ -1,75 +1,78 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+"" ALL THE SETS
+syntax on
 
 set encoding=utf-8
+set noerrorbells
 
+" Tab key enters 2 spaces
+" To enter a TAB character when `expandtab` is in effect,
+" CTRL-v-TAB
+set expandtab tabstop=2 shiftwidth=2 softtabstop=2
+
+" highlight matching parents, braces, brackets, etc
+set showmatch
+
+" Indent
+set smartindent
+set number
+set nowrap
+
+set noswapfile
+set nobackup
+set undodir=~/.vim/undodir
+set undofile
+set hidden
+
+" make Backspace work like Delete
+set backspace=indent,eol,start
+
+" http://vim.wikia.com/wiki/Searching
+set hlsearch incsearch ignorecase smartcase
+
+set colorcolumn=120
+highlight ColorColumn ctermbg=0 guibg=lightgrey
+
+"" ALL THE PLUGINS
 call plug#begin()
 
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-haml'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-fugitive'
-Plug 'jiangmiao/auto-pairs'
-Plug 'zxqfl/tabnine-vim'
+Plug 'tpope/vim-endwise'
 Plug 'vim-ruby/vim-ruby'
-Plug 'zeis/vim-kolor'
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'shougo/deoplete.nvim'
-Plug 'janko-m/vim-test'
-Plug 'tpope/vim-endwise'
 Plug 'kassio/neoterm'
+Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
 
 call plug#end()
 
-" Show hidden files on NERDTree
+" colors
+colorscheme gruvbox
+set background=dark
+
+" NERDTree
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['\DS_Store$']
-
-" Toogle NERDTree with Ctrl+n
 map <C-n> :NERDTreeToggle<CR>
 
-" Add spaces after comment delimiters by default
+" Nerdcommenter
 let g:NERDSpaceDelims = 1
-
-" Use compact syntax for prettified multi-line comments
 let g:NERDCompactSexyComs = 1
-
-" Allow commenting and inverting empty lines (useful when commenting a region)
 let g:NERDCommentEmptyLines = 1
 
-" Set color scheme
-syntax on
-colorscheme kolor
-
-" vim kolor
-let g:kolor_italic=1
-let g:kolor_bold=1
-
-" Identation setup
-set expandtab
-set shiftwidth=2
-set softtabstop=2
-
-" Line number
-set number
-" set relativenumber
-
-" Set backspace
-set backspace=indent,eol,start
-
-" Save content to default register to paste multiple times
-xnoremap p pgvy
-
+" Searching tools https://thoughtbot.com/blog/faster-grepping-in-vim
 " The Silver Searcher
 if executable('ag')
   " Use ag over grep
   set grepprg=ag\ --nogroup\ --nocolor
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
 
   " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
@@ -82,53 +85,7 @@ nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
 
 nnoremap \ :Ag<SPACE>
-
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Resize window
-if bufwinnr(1)
-  map + <C-W>>
-  map - <C-W><
-  map ± <C-W>=
-endif
-
-" Trim whitespaces
-fun! TrimWhitespace()
-  let l:save = winsaveview()
-  %s/\s\+$//e
-  call winrestview(l:save)
-endfun
-
-" Run before end
-autocmd BufWritePre * :call TrimWhitespace()
-
-" Syntastic config
-set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-" Highlight search results
-:set hlsearch
-autocmd InsertEnter * :let @/=""
-autocmd InsertLeave * :let @/=""
-
-" four space tabs for JS
-autocmd Filetype javascript setlocal ts=2 sts=2 sw=2
-
-autocmd BufNewFile,BufRead *.etl
-      \ set filetype=ruby
-
-" ctrl p use silver searcher
-let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
-let g:ctrlp_use_caching = 0
-
-" run tests
-map <Leader>t :TestFile<CR>
-map <Leader>r :TestNearest<CR>
+" END of Searching tools
 
 " Airline theme
 let g:airline_theme='deus'
@@ -136,35 +93,53 @@ let g:airline_powerline_fonts = 1
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
+inoremap <silent><expr> <TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
-" Vim test
-tnoremap <ESC> <C-\><C-n>
+" Usage of solargraph
+let g:LanguageClient_serverCommands = {
+    \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
+    \ }
+nnoremap <silent> Ç :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
-let test#strategy = "neovim"
-let test#neovim#term_position = "belowright"
+"" REMAPS
+let mapleader = " "
 
-"""""""""""""""""""""
-" Terminal Settings "
-"""""""""""""""""""""
+" Smart way to move between windows
+nnoremap <leader>h :wincmd h<CR>
+nnoremap <leader>j :wincmd j<CR>
+nnoremap <leader>k :wincmd k<CR>
+nnoremap <leader>l :wincmd l<CR>
 
-" Window navigation function
-" Make ctrl-h/j/k/l move between windows and auto-insert in terminals
-func! s:mapMoveToWindowInDirection(direction)
-    func! s:maybeInsertMode(direction)
-        stopinsert
-        execute "wincmd" a:direction
+" Resize window
+nnoremap <Leader>+ :vertical resize +5<CR>
+nnoremap <Leader>- :vertical resize -5<CR>
 
-        if &buftype == 'terminal'
-            startinsert!
-        endif
-    endfunc
+" yank
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nnoremap <leader>Y gg"+yG
 
-    execute "tnoremap" "<silent>" "<C-" . a:direction . ">"
-                \ "<C-\\><C-n>"
-                \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
-    execute "nnoremap" "<silent>" "<C-" . a:direction . ">"
-                \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
-endfunc
-for dir in ["h", "j", "l", "k"]
-  call s:mapMoveToWindowInDirection(dir)
-endfor
+" Highlight search results
+" CursorLine - sometimes autocmds are not performant; turn off if so
+" http://vim.wikia.com/wiki/Highlight_current_line
+set cursorline
+" Normal mode
+highlight CursorLine ctermbg=None
+autocmd InsertEnter * highlight  CursorLine ctermbg=17 ctermfg=None
+autocmd InsertLeave * highlight  CursorLine ctermbg=None ctermfg=None
+
+autocmd BufNewFile,BufRead *.etl
+      \ set filetype=ruby
+"
+
+"" FUNCTIONS
+" Trim whitespaces and run before end
+fun! TrimWhitespace()
+  let l:save = winsaveview()
+  %s/\s\+$//e
+  call winrestview(l:save)
+endfun
+autocmd BufWritePre * :call TrimWhitespace()
+
